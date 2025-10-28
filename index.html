@@ -3,28 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penampil JSON Produk (Online)</title>
+    <title>Penampil Produk</title>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet" />
 
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        /* (BARU) Atur halaman awal */
+        html, body {
+            height: 100%;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #f4f7f6;
-            color: #333;
         }
-        .container {
+
+        /* (BARU) Kontainer untuk logo SVG */
+        #startScreen {
+            display: flex; /* Menggunakan flexbox untuk center */
+            align-items: center; /* Center vertikal */
+            justify-content: center; /* Center horizontal */
+            height: 100vh; /* Tinggi penuh viewport */
+            padding: 20px;
+            box-sizing: border-box;
+            /* Transisi untuk menghilang */
+            transition: opacity 0.3s ease-out;
+        }
+
+        /* (BARU) Atur ukuran SVG (sekarang <img>) */
+        #startScreen img {
+            width: 80%;
+            max-width: 426px; /* Lebar SVG Anda */
+            height: auto;
+        }
+
+        /* (BARU) Kontainer untuk aplikasi utama */
+        #appContainer {
+            display: none; /* Sembunyikan aplikasi di awal */
             max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
         }
+
+        /* === (LAMA) Semua style dari skrip sebelumnya === */
         h1 {
             text-align: center;
             color: #111;
         }
-
-        /* === (DIPERBARUI) Area Filter === */
         #filterContainer {
             background-color: #fff;
             padding: 20px;
@@ -32,12 +56,10 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             margin-bottom: 30px;
             display: grid;
-            /* Grid 4 kolom di desktop */
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             align-items: end;
         }
-
         .filter-group, .search-group {
             display: flex;
             flex-direction: column;
@@ -53,45 +75,35 @@
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 1em;
-            box-sizing: border-box; /* Pastikan padding tidak merusak layout */
+            box-sizing: border-box;
         }
-
-        /* (BARU) Atur layout search box */
         .search-group {
-            /* Span 2 kolom */
             grid-column: span 2;
         }
-        /* (BARU) Atur layout dropdown */
         .filter-group {
             grid-column: span 1;
         }
-        /* (BARU) Atur layout tombol reset */
         #resetBtn {
             background-color: #6c757d;
             color: white;
             cursor: pointer;
             border: none;
-            /* Span 2 kolom agar sejajar dengan search */
             grid-column: span 2;
         }
         #resetBtn:hover {
             background-color: #5a6268;
         }
-
-        /* (BARU) Responsif untuk layar kecil */
         @media (max-width: 768px) {
             #filterContainer {
-                grid-template-columns: 1fr 1fr; /* 2 kolom di tablet/HP */
+                grid-template-columns: 1fr 1fr;
             }
             .search-group, #resetBtn {
-                grid-column: 1 / -1; /* Full width */
+                grid-column: 1 / -1;
             }
             .filter-group {
-                grid-column: span 1; /* Tetap 1 kolom */
+                grid-column: span 1;
             }
         }
-        /* === Akhir Area Filter === */
-
         #outputContainer {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -176,74 +188,98 @@
 </head>
 <body>
 
-    <div class="container">
-        <h1>Data Produk</h1>
+    <div id="startScreen">
+        <img src="https://mentarigroup.pages.dev/data/logomentari.svg" alt="Mentari Group Logo">
+    </div>
 
+    <div id="appContainer">
+        <h1>Data Produk</h1>
         <div id="filterContainer">
             </div>
-
         <div id="outputContainer">
-            <p class="status-message">Sedang memuat data produk...</p>
-        </div>
+            </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 
     <script>
-        const outputContainer = document.getElementById('outputContainer');
-        const filterContainer = document.getElementById('filterContainer');
         const jsonFilePath = 'data.json';
-
         let allProducts = [];
 
-        // (DIPERBARUI) Siapkan referensi untuk semua elemen filter
+        // (BARU) Referensi ke kontainer utama
+        let startScreen, appContainer;
+        let outputContainer, filterContainer; // Pindahkan ini ke scope global
+
         let filterMerek, filterKategori, filterSub1, filterSub1_2, resetBtn, searchBox;
 
-        document.addEventListener('DOMContentLoaded', fetchData);
+        // (BARU) Flag untuk memastikan 'showApp' hanya berjalan sekali
+        let appHasBeenShown = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // (BARU) Dapatkan referensi kontainer
+            startScreen = document.getElementById('startScreen');
+            appContainer = document.getElementById('appContainer');
+            outputContainer = document.getElementById('outputContainer');
+            filterContainer = document.getElementById('filterContainer');
+
+            // Ambil data
+            fetchData();
+        });
+
+        // (BARU) Fungsi untuk menampilkan aplikasi
+        function showApp() {
+            if (appHasBeenShown) return; // Hanya jalankan sekali
+
+            // Sembunyikan logo
+            startScreen.style.opacity = '0';
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+            }, 300); // Sesuaikan dengan durasi transisi CSS
+
+            // Tampilkan aplikasi
+            appContainer.style.display = 'block';
+            appHasBeenShown = true;
+        }
 
         function fetchData() {
             fetch(jsonFilePath)
                 .then(response => response.json())
                 .then(jsonData => {
-
-                    // (DIPERBARUI) Pre-process data sekali saat dimuat
                     allProducts = jsonData.map(item => {
-                        let imageNameTitle = ''; // Hitung sekali
+                        let imageNameTitle = '';
                         if (item.Gambar) {
                             const fullFilename = item.Gambar.split('/').pop();
                             const filenameWithoutExt = fullFilename.replace(/\.(jpg|jpeg|png)$/i, '');
                             imageNameTitle = filenameWithoutExt.replace(/_/g, ' ');
                         }
-
-                        // Tambahkan ke item untuk displayData
                         item.imageNameTitle = imageNameTitle;
-
-                        // Buat teks pencarian
                         item.searchableText = [
                             item.Merek,
                             item.Kategori,
                             item.SubKategori1,
                             item.SubKategori1_2,
-                            imageNameTitle // Gunakan nama yang sudah dihitung
+                            imageNameTitle
                         ].filter(Boolean).join(' ').toLowerCase();
-
                         return item;
                     });
 
                     initializeFilters();
-                    displayData(allProducts);
+
+                    // (DIUBAH) Jangan tampilkan semua data, tapi tampilkan pesan
+                    outputContainer.innerHTML = '<p class="status-message">Silakan pilih filter untuk memulai.</p>';
                 })
                 .catch(error => {
                     console.error('Error saat fetch data:', error);
-                    outputContainer.innerHTML = `<p class="error-message">Error: Tidak dapat memuat data. <br>(${error.message})</p>`;
+                    // Tampilkan error di layar utama jika fetch gagal
+                    startScreen.innerHTML = `<p class="error-message">Error: Tidak dapat memuat data. <br>(${error.message})</p>`;
                 });
         }
 
-        // --- (TETAP) Fungsi Filter Bertingkat dari skrip sebelumnya ---
+        // --- (DIPERBARUI) Fungsi Filter Bertingkat ---
+        // (Semua 'handler' sekarang memanggil 'showApp()' )
 
         function initializeFilters() {
-            // (DIPERBARUI) Buat HTML untuk semua filter, termasuk search box
             filterContainer.innerHTML = `
                 <div class="search-group">
                     <label for="searchBox">Cari Produk</label>
@@ -276,7 +312,6 @@
                 <button id="resetBtn">Reset Filter</button>
             `;
 
-            // (DIPERBARUI) Dapatkan referensi elemen
             searchBox = document.getElementById('searchBox');
             filterMerek = document.getElementById('filterMerek');
             filterKategori = document.getElementById('filterKategori');
@@ -284,19 +319,34 @@
             filterSub1_2 = document.getElementById('filterSub1_2');
             resetBtn = document.getElementById('resetBtn');
 
-            // Isi dropdown Merek
             const mereks = [...new Set(allProducts.map(item => item.Merek).filter(Boolean))].sort();
             updateSelectOptions(filterMerek, mereks);
 
-            // (DIPERBARUI) Tambahkan Event Listeners
-            searchBox.addEventListener('input', applyFilters); // Panggil applyFilters saat mengetik
-            filterMerek.addEventListener('change', handleMerekChange);
-            filterKategori.addEventListener('change', handleKategoriChange);
-            filterSub1.addEventListener('change', handleSub1Change);
-            filterSub1_2.addEventListener('change', applyFilters);
+            // (DIPERBARUI) Tambahkan 'showApp()' ke semua event listeners
 
+            searchBox.addEventListener('input', () => {
+                showApp();
+                applyFilters();
+            });
+            filterMerek.addEventListener('change', () => {
+                showApp();
+                handleMerekChange();
+            });
+            filterKategori.addEventListener('change', () => {
+                showApp();
+                handleKategoriChange();
+            });
+            filterSub1.addEventListener('change', () => {
+                showApp();
+                handleSub1Change();
+            });
+            filterSub1_2.addEventListener('change', () => {
+                showApp();
+                applyFilters();
+            });
             resetBtn.addEventListener('click', () => {
-                searchBox.value = ''; // (BARU) Kosongkan search box
+                showApp();
+                searchBox.value = '';
                 filterMerek.value = '';
                 handleMerekChange();
             });
@@ -319,7 +369,6 @@
             updateSelectOptions(filterKategori, []);
             updateSelectOptions(filterSub1, []);
             updateSelectOptions(filterSub1_2, []);
-
             if (selectedMerek) {
                 const productsByMerek = allProducts.filter(p => p.Merek === selectedMerek);
                 const kategoris = [...new Set(productsByMerek.map(item => item.Kategori).filter(Boolean))].sort();
@@ -333,7 +382,6 @@
             const selectedKategori = filterKategori.value;
             updateSelectOptions(filterSub1, []);
             updateSelectOptions(filterSub1_2, []);
-
             if (selectedMerek && selectedKategori) {
                 const productsByKategori = allProducts.filter(p => p.Merek === selectedMerek && p.Kategori === selectedKategori);
                 const sub1s = [...new Set(productsByKategori.map(item => item.SubKategori1).filter(Boolean))].sort();
@@ -347,7 +395,6 @@
             const selectedKategori = filterKategori.value;
             const selectedSub1 = filterSub1.value;
             updateSelectOptions(filterSub1_2, []);
-
             if (selectedMerek && selectedKategori && selectedSub1) {
                 const productsBySub1 = allProducts.filter(p => p.Merek === selectedMerek && p.Kategori === selectedKategori && p.SubKategori1 === selectedSub1);
                 const sub1_2s = [...new Set(productsBySub1.map(item => item.SubKategori1_2).filter(Boolean))].sort();
@@ -356,22 +403,14 @@
             applyFilters();
         }
 
-        /**
-         * (DIPERBARUI) Fungsi ini sekarang juga menyertakan filter PENCARIAN
-         */
         function applyFilters() {
-            // (BARU) Ambil nilai pencarian
             const searchTerm = searchBox.value.toLowerCase().trim();
-
-            // Ambil nilai dropdown
             const selectedMerek = filterMerek.value;
             const selectedKategori = filterKategori.value;
             const selectedSub1 = filterSub1.value;
             const selectedSub1_2 = filterSub1_2.value;
 
             let filteredData = allProducts;
-
-            // 1. Terapkan filter dropdown
             if (selectedMerek) {
                 filteredData = filteredData.filter(item => item.Merek === selectedMerek);
             }
@@ -384,46 +423,36 @@
             if (selectedSub1_2) {
                 filteredData = filteredData.filter(item => item.SubKategori1_2 === selectedSub1_2);
             }
-
-            // 2. (BARU) Terapkan filter pencarian PADA HASIL dropdown
             if (searchTerm) {
                 filteredData = filteredData.filter(item =>
                     item.searchableText.includes(searchTerm)
                 );
             }
 
-            displayData(filteredData);
+            // (BARU) Jika tidak ada filter yang aktif, jangan tampilkan apa-apa
+            if (!searchTerm && !selectedMerek && !selectedKategori && !selectedSub1 && !selectedSub1_2) {
+                 outputContainer.innerHTML = '<p class="status-message">Silakan pilih filter untuk memulai.</p>';
+            } else {
+                 displayData(filteredData);
+            }
         }
 
-        // --- Akhir Fungsi Filter ---
-
-
-        /**
-         * (DIPERBARUI) Fungsi displayData sekarang menggunakan
-         * 'item.imageNameTitle' yang sudah diproses sebelumnya
-         */
+        /* (Fungsi displayData tidak berubah) */
         function displayData(data) {
             outputContainer.innerHTML = '';
-
             if (!Array.isArray(data) || data.length === 0) {
                 outputContainer.innerHTML = '<p class="status-message">Tidak ada produk yang cocok dengan filter Anda.</p>';
                 return;
             }
-
             data.forEach(item => {
                 const imageUrl = item.Gambar
                     ? item.Gambar
                     : `https://via.placeholder.com/300x200?text=${encodeURIComponent(item.Merek || 'Gambar')}`;
-
                 const imageHtml = `<img src="${imageUrl}" alt="${item.Merek || 'Gambar Produk'}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200?text=Gambar+Rusak';">`;
-
-                // (DIPERBARUI) Ambil nama file yang sudah diproses
                 const imageNameTitle = item.imageNameTitle || '';
-
                 let contentHtml = '<div class="card-content">';
                 contentHtml += `<h3>${item.Merek || 'Tanpa Merek'}</h3>`;
                 contentHtml += `<p class="kategori">${item.Kategori || 'Tanpa Kategori'}</p>`;
-
                 let subKategoriHtml = '';
                 if (item.SubKategori1) {
                     subKategoriHtml = item.SubKategori1;
@@ -434,30 +463,21 @@
                 if (subKategoriHtml) {
                     contentHtml += `<p class="subkategori">${subKategoriHtml}</p>`;
                 }
-
-                // Tampilkan nama file di kartu
                 if (imageNameTitle) {
                     contentHtml += `<p class="image-name">${imageNameTitle}</p>`;
                 }
-
                 contentHtml += '</div>';
-
                 const cardInnerHtml = imageHtml + contentHtml;
-
                 if (item.Gambar) {
                     const linkWrapper = document.createElement('a');
                     linkWrapper.href = item.Gambar;
                     linkWrapper.setAttribute('data-lightbox', 'gallery-produk');
-
-                    // Gunakan nama file untuk judul lightbox
                     linkWrapper.setAttribute('data-title', imageNameTitle);
-
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = cardInnerHtml;
                     linkWrapper.appendChild(card);
                     outputContainer.appendChild(linkWrapper);
-
                 } else {
                     const card = document.createElement('div');
                     card.className = 'card card-no-link';
