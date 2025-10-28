@@ -1,9 +1,8 @@
 name: ⚠️ Copy ke Branch Site Cloudflare
 
 on:
-  workflow_run:
   schedule:
-    - cron: '0 7 * * *' 
+    - cron: '0 7 * * *'
   push:
     branches:
       - main  
