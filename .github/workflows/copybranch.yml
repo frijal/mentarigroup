@@ -61,7 +61,7 @@ jobs:
           rsync -a --delete \
             --include='artikel/***' \
             --include='ext/***' \
-            --include='img/***' \
+            --include='data/***' \
             --include='data.json' \
             --include='_redirects' \
             --include='_headers' \
