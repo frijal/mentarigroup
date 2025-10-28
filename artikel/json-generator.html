@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator JSON Produk</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #111;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input[type="text"], input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box; /* Memastikan padding tidak mempengaruhi lebar */
+        }
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        #downloadBtn {
+            background-color: #28a745;
+            color: white;
+        }
+        #downloadBtn:hover {
+            background-color: #218838;
+        }
+        #clearBtn {
+            background-color: #dc3545;
+            color: white;
+        }
+        #clearBtn:hover {
+            background-color: #c82333;
+        }
+        pre {
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            white-space: pre-wrap; /* Agar JSON tidak overflow */
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Generator JSON</h1>
+        <p style="text-align: center;">Tambahkan item produk satu per satu. Biarkan bidang kosong jika tidak diperlukan.</p>
+
+        <form id="itemForm">
+            <input type="text" id="merek" placeholder="Merek (Wajib)" required>
+            <input type="text" id="kategori" placeholder="Kategori (Wajib)" required>
+            <input type="text" id="subkategori1" placeholder="Sub Kategori 1 (Opsional)">
+            <input type="text" id="subkategori1_2" placeholder="Sub Kategori 1.2 (Opsional)">
+            <input type="url" id="gambar" placeholder="URL Gambar (Opsional)">
+
+            <button type="submit">Tambah Item ke Daftar</button>
+        </form>
+
+        <hr style="margin: 25px 0; border: 1px solid #eee;">
+
+        <h2>Pratinjau JSON</h2>
+        <pre id="jsonPreview">[
+    ...Daftar item akan muncul di sini...
+]</pre>
+
+        <div class="button-group">
+            <button id="downloadBtn">Download .json</button>
+            <button id="clearBtn" type="button">Bersihkan Daftar</button>
+        </div>
+    </div>
+
+    <script>
+        // Variabel untuk menyimpan semua item dalam array
+        let items = [];
+
+        // Mengambil elemen-elemen DOM
+        const form = document.getElementById('itemForm');
+        const jsonPreview = document.getElementById('jsonPreview');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        // Referensi ke input fields
+        const merekInput = document.getElementById('merek');
+        const kategoriInput = document.getElementById('kategori');
+        const sub1Input = document.getElementById('subkategori1');
+        const sub1_2Input = document.getElementById('subkategori1_2');
+        const gambarInput = document.getElementById('gambar');
+
+        /**
+         * Fungsi untuk memperbarui tampilan pratinjau JSON
+         */
+        function updatePreview() {
+            if (items.length === 0) {
+                jsonPreview.textContent = "[\n    ...Daftar item akan muncul di sini...\n]";
+            } else {
+                // Tampilkan JSON dengan format yang rapi (pretty-print)
+                jsonPreview.textContent = JSON.stringify(items, null, 2);
+            }
+        }
+
+        /**
+         * Event listener saat formulir di-submit (tombol "Tambah Item")
+         */
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Mencegah halaman reload
+
+            // Ambil nilai dari input dan trim spasi
+            const merek = merekInput.value.trim();
+            const kategori = kategoriInput.value.trim();
+            const sub1 = sub1Input.value.trim();
+            const sub1_2 = sub1_2Input.value.trim();
+            const gambar = gambarInput.value.trim();
+
+            // Buat objek item baru
+            const newItem = {};
+
+            // **LOGIKA PENTING:**
+            // Hanya tambahkan properti ke objek jika nilainya tidak kosong.
+            // Ini secara otomatis menangani 3 struktur yang Anda minta.
+
+            newItem.Merek = merek;
+            newItem.Kategori = kategori;
+
+            if (sub1) {
+                newItem.SubKategori1 = sub1;
+            }
+            if (sub1 && sub1_2) { // Sub 1.2 hanya masuk jika Sub 1 juga ada
+                newItem.SubKategori1_2 = sub1_2;
+            }
+            if (gambar) {
+                newItem.Gambar = gambar;
+            }
+
+            // Tambahkan item baru ke array 'items'
+            items.push(newItem);
+
+            // Perbarui pratinjau JSON
+            updatePreview();
+
+            // Kosongkan formulir untuk input berikutnya
+            form.reset();
+
+            // Fokus kembali ke input 'Merek'
+            merekInput.focus();
+        });
+
+        /**
+         * Event listener untuk tombol "Download .json"
+         */
+        downloadBtn.addEventListener('click', function() {
+            if (items.length === 0) {
+                alert('Daftar item masih kosong. Silakan tambahkan item terlebih dahulu.');
+                return;
+            }
+
+            // Buat string JSON
+            const jsonString = JSON.stringify(items, null, 2);
+
+            // Buat Blob (Binary Large Object)
+            const blob = new Blob([jsonString], { type: 'application/json' });
+
+            // Buat URL sementara untuk blob
+            const url = URL.createObjectURL(blob);
+
+            // Buat elemen link <a> sementara
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data_produk.json'; // Nama file yang akan di-download
+
+            // Tambahkan link ke body, klik, lalu hapus
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            // Hapus URL objek yang sudah tidak terpakai
+            URL.revokeObjectURL(url);
+        });
+
+        /**
+         * Event listener untuk tombol "Bersihkan Daftar"
+         */
+        clearBtn.addEventListener('click', function() {
+            if (confirm('Apakah Anda yakin ingin menghapus semua item dari daftar?')) {
+                items = []; // Kosongkan array
+                updatePreview(); // Perbarui pratinjau
+                form.reset(); // Kosongkan formulir
+            }
+        });
+
+    </script>
+
+</body>
+</html>
