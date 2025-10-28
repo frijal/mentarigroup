@@ -6,7 +6,16 @@
     <description><![CDATA[Feed artikel terbaru untuk kategori 🖥️ Teknologi Web, AI & Umum]]></description>
     <language>id-ID</language>
     <atom:link href="https://frijal.pages.dev/feed-teknologi-web-ai-and-umum.xml" rel="self" type="application/rss+xml" />
-    <lastBuildDate>Tue, 28 Oct 2025 07:31:25 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 28 Oct 2025 08:37:05 GMT</lastBuildDate>
+    <item>
+      <title><![CDATA[Display Produk (Database Style JSON)]]></title>
+      <link><![CDATA[https://frijal.pages.dev/artikel/coba.html]]></link>
+      <guid><![CDATA[https://frijal.pages.dev/artikel/coba.html]]></guid>
+      <pubDate>Tue, 28 Oct 2025 08:36:51 GMT</pubDate>
+      <description><![CDATA[Display Produk (Database Style JSON)]]></description>
+      <category><![CDATA[🖥️ Teknologi Web, AI & Umum]]></category>
+<enclosure url="placeholder.png" length="0" type="image/webp" />
+    </item>
     <item>
       <title><![CDATA[JSON Viewer & Editor | Frijal]]></title>
       <link><![CDATA[https://frijal.pages.dev/artikel/json-editor.html]]></link>
