@@ -27,4 +27,13 @@
       <image:loc>https://frijal.pages.dev/img/pengaturan-posisi-json.webp</image:loc>
     </image:image>
   </url>
+  <url>
+    <loc>https://frijal.pages.dev/artikel/bikin-edit-json-komposisi-kategori-elemen.html</loc>
+    <lastmod>2025-10-25T05:51:04.726+00:00</lastmod>
+    <priority>0.6</priority>
+    <changefreq>monthly</changefreq>
+    <image:image>
+      <image:loc>https://frijal.pages.dev/img/bikin-edit-json-komposisi-kategori-elemen.webp</image:loc>
+    </image:image>
+  </url>
 </urlset>
