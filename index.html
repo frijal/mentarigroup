@@ -1,91 +1,177 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Jelajahi Artikel: Windows, Linux, Religi, & Karir | Frijal</title>
-    
-    <meta name="description" content="Jelajahi beragam topik mulai dari panduan sistem operasi Windows dan Linux, inspirasi kehidupan, komunitas, hingga artikel religi dan Islam, serta tips karir." />
-    <meta name="keywords" content="Artikel, Linux, Ubuntu, Arch, Fedora, Windows, panduan OS, religi, Islam, karir, teknologi, Frijal" />
-    <meta name="author" content="Fakhrul" />
-    <meta name="publisher" content="Frijal" />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
-    <link rel="canonical" href="https://frijal.pages.dev/" />
-
-    <link rel="dns-prefetch" href="https://frijal.pages.dev/" />
-    <link rel="stylesheet" href="ext/marquee-url.css">
-    <link rel="stylesheet" href="ext/indexhtml.css" />
-
-    <meta property="og:title" content="Galeri Artikel Frijal: Teknologi, Linux, Religi, dan Karir" />
-    <meta property="og:description" content="Kumpulan artikel terbaru tentang Linux, Windows, Islam, dan tips karir. Temukan topik yang relevan dengan minat Anda." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://frijal.pages.dev/" />
-    <meta property="og:site_name" content="Frijal" />
-    <meta property="og:locale" content="id_ID" />
-    <meta property="og:image" content="https://frijal.pages.dev/thumbnail.webp" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="675" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Galeri Artikel Frijal: Teknologi, Linux, Religi, dan Karir" />
-    <meta name="twitter:description" content="Kumpulan artikel terbaru tentang Linux, Windows, Islam, dan tips karir." />
-    <meta name="twitter:site" content="@frijal" />
-    <meta name="twitter:creator" content="@frijal" />
-    <meta name="twitter:image" content="https://frijal.pages.dev/thumbnail.webp" />
-
-    <link rel="manifest" href="https://frijal.pages.dev/site.webmanifest" />
-    <link rel="icon" href="https://frijal.pages.dev/favicon.ico" sizes="any" />
-    <link rel="icon" href="https://frijal.pages.dev/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="https://frijal.pages.dev/ext/icons/apple-touch-icon.png" />
-    <meta name="theme-color" content="#26a69a" />
-    <meta name="color-scheme" content="light dark" />
-
-    <meta name="yandex-verification" content="66e0210b3bd10ad0" />
-    <meta name="google-site-verification" content="9Jwla8V71mwNNZ4NNPThsK_BHpWn6quXWSs_VjPAflA" />
-    <link rel="alternate" type="application/rss+xml" title="RSS Feed Frijal" href="https://frijal.pages.dev/rss.xml" />
-    
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebSite",
-          "name": "Frijal",
-          "url": "https://frijal.pages.dev/",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://frijal.pages.dev/search?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        },
-        {
-          "@type": "Person",
-          "name": "Fakhrul",
-          "url": "https://frijal.pages.dev/"
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Produk (dari JSON)</title>
+    <style>
+        /* CSS-nya tetap sama */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+                "Segoe UI Symbol";
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
         }
-      ]
-    }
-    </script>
-    <style>a:link,
-a:visited {
-  color: inherit;       /* atau warna spesifik seperti black, #333, dll */
-  text-decoration: none;
-}</style>
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .product-category {
+            margin-bottom: 2.5rem;
+        }
+        .product-category h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .product-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        .product-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+        .card-content {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .card-content h3 {
+            font-size: 1.2rem;
+            margin: 0 0 0.5rem 0;
+            color: #111;
+        }
+        .card-content .price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2a9d8f;
+            margin: 0 0 0.75rem 0;
+        }
+        .card-content .description {
+            font-size: 0.9rem;
+            color: #555;
+            flex-grow: 1;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            min-height: 40px; 
+        }
+        .card-content .timestamp {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: auto;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1><a href="https://frijal.pages.dev/disclaimer.html">Galeri Artikel</a></h1>
-        <div id="main-container"></div>
-    </div>
-    <footer class="page-footer">
-        <p>🄯 2025 frijal.pages.dev</p>
-    </footer>
-  <nav id="quick-nav" aria-label="Navigasi cepat"></nav>
-  <script type="module" src="ext/indexhtml-util.js"></script>
-  <script type="module" src="ext/indexhtml-render.js"></script>
-  <script type="module" src="ext/indexhtml-main.js"></script>
-  <div class="search-floating-container"><input type="text" id="floatingSearchInput" placeholder="cari artikel..." autocomplete="off"><span id="floatingSearchClear" class="clear-button"></span><div id="floatingSearchResults" class="floating-results-container"></div></div>
-<script defer src="ext/marquee-url.js"></script><script defer src="ext/markdown.js"></script>
+
+    <main id="product-container"></main>
+
+    <script>
+        // Menjalankan skrip setelah halaman HTML selesai dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Mengambil data dari file 'data.json'
+            fetch('data.json')
+                .then(response => {
+                    // Periksa apakah file ditemukan
+                    if (!response.ok) {
+                        throw new Error('File data.json tidak ditemukan.');
+                    }
+                    // Ubah respons menjadi format JSON
+                    return response.json();
+                })
+                .then(data => {
+                    // Dapatkan kontainer utama
+                    const container = document.getElementById('product-container');
+                    
+                    // Loop untuk setiap KATEGORI di dalam data JSON
+                    // (Contoh: "🖥️ Kategori 1", "☢️ Kategori 2")
+                    for (const categoryName in data) {
+                        const items = data[categoryName];
+                        
+                        // 1. Buat elemen <section> untuk kategori
+                        const categorySection = document.createElement('section');
+                        categorySection.className = 'product-category';
+                        
+                        // 2. Buat judul kategori <h2>
+                        const categoryTitle = document.createElement('h2');
+                        categoryTitle.textContent = categoryName;
+                        categorySection.appendChild(categoryTitle);
+                        
+                        // 3. Buat <div class="product-grid">
+                        const grid = document.createElement('div');
+                        grid.className = 'product-grid';
+                        
+                        // 4. Loop untuk setiap ITEM di dalam kategori
+                        items.forEach(item => {
+                            // Ekstrak data dari array
+                            const title = item[0];
+                            const price = item[1];
+                            const imageUrl = item[2];
+                            const timestamp = item[3];
+                            const description = item[4];
+
+                            // Format tanggal (ambil YYYY-MM-DD saja)
+                            const formattedDate = timestamp.split('T')[0];
+
+                            // Buat HTML untuk satu kartu produk
+                            // (Kita gunakan backticks `` untuk string multi-baris)
+                            const cardHtml = `
+                                <a href="#" class="product-card">
+                                    <img src="${imageUrl}" alt="${title}">
+                                    <div class="card-content">
+                                        <h3>${title}</h3>
+                                        <p class="price">${price}</p>
+                                        <p class="description">${description}</p>
+                                        <p class="timestamp">Diperbarui: ${formattedDate}</p>
+                                    </div>
+                                </a>
+                            `;
+                            
+                            // Tambahkan HTML kartu ke grid
+                            grid.innerHTML += cardHtml;
+                        });
+                        
+                        // Tambahkan grid ke section
+                        categorySection.appendChild(grid);
+                        
+                        // Tambahkan section kategori ke kontainer utama
+                        container.appendChild(categorySection);
+                    }
+                })
+                .catch(error => {
+                    // Tampilkan error jika terjadi masalah
+                    console.error('Gagal memuat produk:', error);
+                    const container = document.getElementById('product-container');
+                    container.innerHTML = '<p style="color: red;">Gagal memuat data produk. Lihat konsol untuk detail.</p>';
+                });
+        });
+    </script>
+
 </body>
 </html>
