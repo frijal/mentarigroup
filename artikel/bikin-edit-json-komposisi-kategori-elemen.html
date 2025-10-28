@@ -1,26 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
-<head> 
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Buat Edit JSON Komposisi Blok Kategori & Elemen</title>
-  <link rel="canonical" href="https://frijal.pages.dev/artikel/bikin-edit-json-komposisi-kategori-elemen.html">
-  <link rel="icon" href="https://frijal.pages.dev/favicon.ico" type="image/x-icon">
-  <meta name="description" content="Edit dan buat file JSON untuk komposisi blok kategori dan elemen secara mudah. Solusi pengelolaan data yang efisien, praktis, dan terpadu.">
-  <meta name="keywords" content="JSON, blok kategori, elemen, edit JSON, buat JSON, data struktur, frijal">
-  <meta name="author" content="Frijal">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="https://frijal.pages.dev/artikel/bikin-edit-json-komposisi-kategori-elemen.html">
-  <meta property="og:title" content="Buat Edit JSON Komposisi Blok Kategori & Elemen">
-  <meta property="og:description" content="Edit dan buat file JSON untuk komposisi blok kategori dan elemen secara mudah. Solusi pengelolaan data yang efisien, praktis, dan terpadu.">
-  <meta property="og:image" content="https://frijal.pages.dev/img/bikin-edit-json-komposisi-kategori-elemen.webp">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Buat Edit JSON Komposisi Blok Kategori & Elemen">
-  <meta name="twitter:description" content="Edit dan buat file JSON untuk komposisi blok kategori dan elemen secara mudah. Solusi pengelolaan data yang efisien, praktis, dan terpadu.">
-  <meta name="twitter:image" content="https://frijal.pages.dev/img/bikin-edit-json-komposisi-kategori-elemen.webp">
-  <meta name="twitter:site" content="@frijal">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://frijal.pages.dev/artikel/bikin-edit-json-komposisi-kategori-elemen.html","image":"https://frijal.pages.dev/img/bikin-edit-json-komposisi-kategori-elemen.webp"},"headline":"Buat Edit JSON Komposisi Blok Kategori & Elemen","description":"Edit dan buat file JSON untuk komposisi blok kategori dan elemen secara mudah. Solusi pengelolaan data yang efisien, praktis, dan terpadu.","image":"https://frijal.pages.dev/img/bikin-edit-json-komposisi-kategori-elemen.webp","author":{"@type":"Person","name":"Frijal","image":"https://frijal.pages.dev/img/bikin-edit-json-komposisi-kategori-elemen.webp"},"publisher":{"@type":"Organization","name":"Frijal","logo":{"@type":"ImageObject","url":"https://frijal.pages.dev/favicon.ico","image":"https://frijal.pages.dev/img/bikin-edit-json-komposisi-kategori-elemen.webp"},"image":"https://frijal.pages.dev/img/bikin-edit-json-komposisi-kategori-elemen.webp"},"datePublished":"2024-06-13","dateModified":"2024-06-13"}</script>
-<style>
+  <title>Editor JSON (Format Galeri Produk)</title>
+  <style>
   /* --- Global & Typography --- */
   *,
   *::before,
@@ -67,18 +51,18 @@
     margin-bottom: 16px;
     font-size: 1rem;
   }
-  
+
   code {
     background: #ecf0f1;
     padding: 2px 6px;
     border-radius: 4px;
     font-family: Consolas, monaco, monospace;
   }
-  
+
   hr {
     display: none;
   }
-  
+
   /* --- Layout Card --- */
   .card {
     background: #ffffff;
@@ -102,7 +86,6 @@
   textarea,
   input[type=file] {
     width: 100%;
-    /* max-width: 600px; */ /* Dihapus agar bisa fluid di dalam flex */
     padding: 12px 14px;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -111,12 +94,12 @@
     background-color: #fafafa;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
-  
+
   /* Override untuk input file di card pertama */
   .card:first-of-type input[type=file] {
       max-width: 600px;
   }
-  
+
   /* Override untuk input nama kategori */
   #categoryName {
       max-width: 600px;
@@ -152,7 +135,7 @@
     margin-right: 12px;
     transition: background-color 0.2s;
   }
-  
+
   input[type=file]::file-selector-button:hover {
     background-color: #2c3e50;
   }
@@ -229,18 +212,18 @@
     margin-top: 16px;
   }
 
-  /* --- (PERUBAHAN UTAMA) Elemen Row & Preview --- */
+  /* --- Elemen Row & Preview --- */
   .element-row {
-    border: none; /* Pindahkan border ke flex container */
+    border: none;
     padding: 0;
     margin-bottom: 16px;
-    background: transparent; /* Pindahkan bg ke flex container */
-    position: relative; /* Tetap relative untuk tombol hapus */
+    background: transparent;
+    position: relative;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-    overflow: hidden; /* Untuk menjaga border-radius */
+    overflow: hidden;
   }
-  
+
   .element-row-flex {
     display: flex;
     flex-wrap: wrap; /* Agar responsif di layar kecil */
@@ -261,7 +244,7 @@
     min-width: 250px;
     padding: 20px;
     background: #fcfcfc;
-    position: relative; /* Untuk menahan preview card */
+    position: relative;
   }
 
   .preview-card {
@@ -273,7 +256,7 @@
     position: sticky; /* Tetap terlihat saat scroll kolom input */
     top: 20px;
   }
-  
+
   .preview-image {
     width: 100%;
     height: 150px;
@@ -285,42 +268,40 @@
     justify-content: center;
     font-size: 0.9rem;
   }
-  
+
   .preview-content {
     padding: 16px;
   }
 
   .preview-title {
-    font-size: 1.2rem;
+    font-size: 1.1rem; /* Dikecilkan sedikit */
     font-weight: 600;
     margin: 0 0 8px 0;
     color: #333;
-    /* Batasi 2 baris */
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;  
+    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+
   .preview-desc {
     font-size: 0.9rem;
     color: #666;
     margin: 0 0 12px 0;
-    /* Batasi 3 baris */
     display: -webkit-box;
     -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;  
+    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
-  .preview-date {
+
+  .preview-date { /* Diubah jadi SubKategori1_2 */
     font-size: 0.8rem;
     font-weight: 500;
     color: #999;
   }
-  
+
   /* --- Penyesuaian Label di Dalam Row --- */
   .element-inputs label {
     margin-top: 12px;
@@ -330,55 +311,55 @@
     margin-top: 0;
   }
 </style>
-<meta property="og:image:alt" content="Buat Edit JSON Komposisi Blok Kategori & Elemen">
-  <meta itemprop="image" content="https://frijal.pages.dev/img/bikin-edit-json-komposisi-kategori-elemen.webp">
-<link rel="stylesheet" href="/ext/marquee-url.css"><link rel="alternate" type="application/rss+xml" title="30 artikel baru bikin." href="https://frijal.pages.dev/rss.xml" />
-    <meta property="article:published_time" content="2025-10-25T05:51:04.726+00:00">
 </head>
 <body>
 
-  <h1>Editor JSON Blok Kategori dan Elemen</h1>
-<div id="iposbrowser"></div>
-
+  <h1>Editor JSON Galeri Produk</h1>
   <div class="card">
-    <h2>1. Muat Data (Opsional)</h2>
-    <p>Muat file JSON yang ada untuk mengedit atau menambah kategori.</p>
-    <label for="loadJsonFile">Muat file <code>data_kategori.json</code>:</label>
+    <h2>1. Muat Data (Wajib)</h2>
+    <p>Muat file <code>data.json</code> Anda untuk memulai.</p>
+    <label for="loadJsonFile">Muat file <code>data.json</code>:</label>
     <input type="file" id="loadJsonFile" accept="application/json">
   </div>
 
   <div class="card">
-    <h2>2. Edit atau Buat Kategori</h2>
+    <h2>2. Edit Berdasarkan Merek</h2>
     <div>
-      <label for="categoryName">Pilih Kategori yang Ada atau Ketik Nama Baru:</label>
-      <input type="text" id="categoryName" list="categoryList" placeholder="Pilih atau ketik nama kategori..." />
+      <label for="categoryName">Pilih Merek yang Ada atau Ketik Nama Baru:</label>
+      <input type="text" id="categoryName" list="categoryList" placeholder="Pilih atau ketik nama Merek..." />
       <datalist id="categoryList"></datalist>
     </div>
 
     <div class="category-block">
-      <h3>Data Elemen untuk Kategori Terpilih</h3>
+      <h3>Data Item Produk untuk Merek Terpilih</h3>
       <div id="elementsContainer" class="elements-list">
-        </div>
-      <button id="addElementBtn">+ Tambah Elemen Baru</button>
+         <p>Pilih "Merek" di atas untuk memuat item produk.</p>
+      </div>
+      <button id="addElementBtn">+ Tambah Item Baru ke Merek Ini</button>
     </div>
 
     <button id="generateJsonBtn">
-      Generate & Download Updated JSON
+      Generate & Download Updated data.json
     </button>
   </div>
 
-  <script>
-    // ... Seluruh JavaScript Anda dari file asli ...
-    // (Tidak perlu diubah)
-  let existingData = {};
+<script>
+  // =================================================================
+  // == (SKRIP DIPERBARUI TOTAL) ==
+  // == Disesuaikan untuk format array [ { Merek, Kategori, ... } ] ==
+  // =================================================================
 
-  const elementsContainer = document.getElementById('elementsContainer');
-  const addElementBtn = document.getElementById('addElementBtn');
-  const generateJsonBtn = document.getElementById('generateJsonBtn');
-  const categoryNameInput = document.getElementById('categoryName');
+  // (DIUBAH) Mulai sebagai array
+  let existingData = [];
+
+  const elementsContainer = document.getElementById('elementsContainer');
+  const addElementBtn = document.getElementById('addElementBtn');
+  const generateJsonBtn = document.getElementById('generateJsonBtn');
+  const categoryNameInput = document.getElementById('categoryName');
   const loadJsonFile = document.getElementById('loadJsonFile');
   const categoryList = document.getElementById('categoryList');
 
+  // --- 1. Muat File JSON ---
   loadJsonFile.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -386,15 +367,22 @@
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        existingData = JSON.parse(e.target.result);
-        populateCategoryList();
+        const parsed = JSON.parse(e.target.result);
+
+        // (DIUBAH) Pastikan data adalah array
+        if (!Array.isArray(parsed)) {
+            alert('Error: File JSON bukan array. Harap gunakan file data.json dari galeri.');
+            return;
+        }
+
+        existingData = parsed;
+        populateCategoryList(); // Panggil fungsi baru
         categoryNameInput.value = '';
-        elementsContainer.innerHTML = '';
-        addElementBtn.click(); 
-        alert('JSON berhasil dimuat! Pilih kategori dari daftar untuk diedit, atau ketik nama baru.');
+        elementsContainer.innerHTML = '<p>JSON berhasil dimuat! Pilih "Merek" dari daftar untuk diedit, atau ketik nama baru.</p>';
+        alert('JSON berhasil dimuat! Pilih "Merek" dari daftar untuk diedit, atau ketik nama baru.');
       } catch (err) {
         alert('Error: File JSON tidak valid. ' + err.message);
-        existingData = {}; 
+        existingData = [];
       }
     };
     reader.onerror = () => {
@@ -403,203 +391,256 @@
     reader.readAsText(file);
   });
 
+  // --- 2. Isi Daftar Pilihan (berdasarkan Merek) ---
   function populateCategoryList() {
-    categoryList.innerHTML = ''; 
-    if (!existingData) return;
-    for (const categoryName in existingData) {
+    categoryList.innerHTML = '';
+    if (!Array.isArray(existingData)) return;
+
+    // (DIUBAH) Ambil semua Merek unik dari array
+    const mereks = [...new Set(existingData.map(item => item.Merek).filter(Boolean))].sort();
+
+    for (const merekName of mereks) {
       const option = document.createElement('option');
-      option.value = categoryName;
+      option.value = merekName;
       categoryList.appendChild(option);
     }
   }
 
-// ... letakkan ini di bawah fungsi populateCategoryList() ...
-
-  // --- FUNGSI BARU: Live Preview Update ---
-  elementsContainer.addEventListener('input', (e) => {
-    const input = e.target;
-    // Cari .element-row terdekat
-    const row = input.closest('.element-row');
-    if (!row) return;
-
-    // Tentukan nilai default jika input kosong
-    const value = input.value;
-    
-    // Perbarui elemen preview yang sesuai
-    if (input.classList.contains('field-title')) {
-      row.querySelector('.preview-title').textContent = value || 'Judul...';
-    } 
-    else if (input.classList.contains('field-desc')) {
-      row.querySelector('.preview-desc').textContent = value || 'Deskripsi...';
-    }
-    else if (input.classList.contains('field-date')) {
-      row.querySelector('.preview-date').textContent = value || 'Tanggal...';
-    }
-    else if (input.classList.contains('field-image')) {
-      const imgEl = row.querySelector('.preview-image');
-      const placeholder = 'https://via.placeholder.com/400x200.png?text=Image+Preview';
-      
-      if (value) {
-        imgEl.src = value;
-      } else {
-        imgEl.src = placeholder;
-      }
-      // Pastikan onerror selalu ada jika URL baru juga error
-      imgEl.onerror = () => {
-        imgEl.src = placeholder;
-        imgEl.onerror = null;
-      };
-    }
-  });
-
-  // ... sisa kode Anda (categoryNameInput.addEventListener, dll) ...
-  
+  // --- 3. Tampilkan Item saat Merek Dipilih ---
   categoryNameInput.addEventListener('change', () => {
-    const selectedCategory = categoryNameInput.value.trim();
-    elementsContainer.innerHTML = ''; 
+    const selectedMerek = categoryNameInput.value.trim();
+    elementsContainer.innerHTML = ''; // Selalu bersihkan
 
-    if (existingData && existingData[selectedCategory]) {
-      console.log(`Memuat data untuk kategori: ${selectedCategory}`);
-      const elements = existingData[selectedCategory];
+    if (Array.isArray(existingData) && selectedMerek) {
+      // (DIUBAH) Filter array untuk Merek yang cocok
+      const elements = existingData.filter(item => item.Merek === selectedMerek);
+
       if (elements.length > 0) {
-        for (const el of elements) {
-          const elData = {
-            title: el[0],
-            file: el[1],
-            image: el[2],
-            date: el[3], 
-            desc: el[4]
-          };
-          elementsContainer.appendChild(createElementRow(elData));
+        console.log(`Memuat ${elements.length} data untuk Merek: ${selectedMerek}`);
+        // Tampilkan semua elemen yang cocok
+        for (const item of elements) {
+          elementsContainer.appendChild(createElementRow(item));
         }
       } else {
-        elementsContainer.appendChild(createElementRow());
+        // Ini adalah Merek baru, tambahkan satu baris kosong
+        console.log(`Membuat baris baru untuk Merek baru: ${selectedMerek}`);
+        // Kirim Merek ke baris baru agar terisi otomatis
+        elementsContainer.appendChild(createElementRow({ Merek: selectedMerek }));
       }
     } else {
-      console.log(`Membuat baris baru untuk kategori baru: ${selectedCategory}`);
-      elementsContainer.appendChild(createElementRow());
+      elementsContainer.innerHTML = '<p>Pilih "Merek" di atas untuk memuat item produk.</p>';
     }
   });
 
-  // Fungsi buat satu baris input elemen baru
-  function createElementRow(data = {}) {
-    const div = document.createElement('div');
-    div.classList.add('element-row');
+  // --- 4. Buat Baris Input (DIPERBARUI TOTAL) ---
+  function createElementRow(data = {}) {
+    const div = document.createElement('div');
+    div.classList.add('element-row');
 
-    // Ambil yyyy-mm-dd dari ISO string (jika ada)
-    const dateValue = data.date ? data.date.substring(0, 10) : '';
+    // (DIUBAH) Siapkan data baru
+    const merek = escapeHtml(data.Merek || '');
+    const kategori = escapeHtml(data.Kategori || '');
+    const sub1 = escapeHtml(data.SubKategori1 || '');
+    const sub1_2 = escapeHtml(data.SubKategori1_2 || '');
+    const gambar = escapeHtml(data.Gambar || '');
+
     const placeholderImg = 'https://via.placeholder.com/400x200.png?text=Image+Preview';
-    const imgSrc = escapeHtml(data.image || placeholderImg);
+    const imgSrc = gambar || placeholderImg;
 
-    // Placeholder teks untuk preview
-    const titlePreview = escapeHtml(data.title || 'Judul...');
-    const descPreview = escapeHtml(data.desc || 'Deskripsi...');
-    const datePreview = dateValue || 'Tanggal...';
+    // Dapatkan nama file untuk preview
+    let imageNameTitle = 'Nama File...';
+    if (gambar) {
+      try {
+        const fullFilename = gambar.split('/').pop();
+        const filenameWithoutExt = fullFilename.replace(/\.(jpg|jpeg|png)$/i, '');
+        imageNameTitle = filenameWithoutExt.replace(/_/g, ' ');
+      } catch (e) {
+        // biarkan default
+      }
+    }
 
-    div.innerHTML = `
+    const hierarki = `${merek} ${kategori ? '&rarr; ' + kategori : ''} ${sub1 ? '&rarr; ' + sub1 : ''}`;
+
+    div.innerHTML = `
       <button class="remove-btn" title="Hapus elemen ini">×</button>
-      
+
       <div class="element-row-flex">
-      
+
         <div class="element-inputs">
-          <label>Judul:</label>
-          <input type="text" class="field-title" placeholder="Judul elemen" value="${escapeHtml(data.title || '')}" required />
-          
-          <label>File HTML (nama file):</label>
-          <input type="text" class="field-file" placeholder="contoh: halaman.html" value="${escapeHtml(data.file || '')}" required />
-          
-          <label>URL Gambar / Thumbnail:</label>
-          <input type="text" class="field-image" placeholder="URL gambar" value="${escapeHtml(data.image || '')}" />
-          
-          <label>Tanggal (ISO 8601):</label>
-          <input type="date" class="field-date" value="${dateValue}" />
-          
-          <label>Deskripsi singkat:</label>
-          <textarea class="field-desc" placeholder="Masukkan deskripsi singkat...">${escapeHtml(data.desc || '')}</textarea>
+          <label>Merek: (Otomatis dari kategori terpilih)</label>
+          <input type="text" class="field-merek" placeholder="Merek" value="${merek}" required readonly style="background:#eee; color:#555;" />
+
+          <label>URL Gambar:</label>
+          <input type="text" class="field-gambar" placeholder="https://.../gambar.jpg" value="${gambar}" required />
+
+          <label>Kategori:</label>
+          <input type="text" class="field-kategori" placeholder="Kategori" value="${kategori}" required />
+
+          <label>Sub Kategori 1:</label>
+          <input type="text" class="field-sub1" placeholder="Sub Kategori 1 (Opsional)" value="${sub1}" />
+
+          <label>Sub Kategori 1.2:</label>
+          <input type="text" class="field-sub1_2" placeholder="Sub Kategori 1.2 (Opsional)" value="${sub1_2}" />
         </div>
-        
+
         <div class="element-preview">
           <div class="preview-card">
             <img class="preview-image" src="${imgSrc}" alt="Preview" onerror="this.src='${placeholderImg}'; this.onerror=null;" />
             <div class="preview-content">
-              <h4 class="preview-title">${titlePreview}</h4>
-              <p class="preview-desc">${descPreview}</p>
-              <span class="preview-date">${datePreview}</span>
+              <h4 class="preview-title">${escapeHtml(imageNameTitle)}</h4>
+              <p class="preview-desc">${hierarki}</p>
+              <span class="preview-date">${escapeHtml(sub1_2 || '...')}</span>
             </div>
           </div>
         </div>
-        
-      </div>     `;
 
-    // Event tombol hapus elemen
-    div.querySelector('.remove-btn').addEventListener('click', () => {
-      if(confirm('Hapus elemen ini?')) {
-        div.remove();
-      }
-    });
+      </div>      `;
 
-    return div;
-  }
+    // Event tombol hapus elemen
+    div.querySelector('.remove-btn').addEventListener('click', () => {
+      if (confirm('Hapus item produk ini?')) {
+        div.remove();
+      }
+    });
 
-  function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g,"&quot;");
-  }
+    return div;
+  }
 
-  addElementBtn.addEventListener('click', () => {
-    const newRow = createElementRow();
-    elementsContainer.appendChild(newRow);
-  });
+  // --- 5. Tambah Elemen Baru ---
+  addElementBtn.addEventListener('click', () => {
+    const currentMerek = categoryNameInput.value.trim();
+    if (!currentMerek) {
+      alert('Pilih atau ketik "Merek" terlebih dahulu sebelum menambah item baru.');
+      categoryNameInput.focus();
+      return;
+    }
+    // (DIUBAH) Tambah baris baru dengan Merek yang sudah terisi
+    const newRow = createElementRow({ Merek: currentMerek });
+    elementsContainer.appendChild(newRow);
+  });
 
-  generateJsonBtn.addEventListener('click', () => {
-    const categoryName = categoryNameInput.value.trim();
-    if(!categoryName) {
-      alert('Nama kategori harus diisi!');
-      categoryNameInput.focus();
-      return;
-    }
-    const elementDivs = [...elementsContainer.querySelectorAll('.element-row')];
-    if(elementDivs.length === 0) {
-      alert('Tambahkan minimal satu elemen!');
-      return;
-    }
-    const elementsData = [];
-    for(let div of elementDivs) {
-      const title = div.querySelector('.field-title').value.trim();
-      const file = div.querySelector('.field-file').value.trim();
-      const image = div.querySelector('.field-image').value.trim();
-      const date = div.querySelector('.field-date').value.trim();
-      const desc = div.querySelector('.field-desc').value.trim();
-      if(!title || !file) {
-        alert('Judul dan File HTML harus diisi di semua elemen.');
-        return;
-      }
-      const dateISO = date ? (new Date(date)).toISOString() : ""; 
-      elementsData.push([title, file, image, dateISO, desc]);
-    }
-    existingData[categoryName] = elementsData;
-    const jsonStr = JSON.stringify(existingData, null, 2);
-    downloadJSON(jsonStr, 'data_kategori_updated.json');
-  });
+  // --- 6. Live Preview (DIPERBARUI TOTAL) ---
+  elementsContainer.addEventListener('input', (e) => {
+    const input = e.target;
+    const row = input.closest('.element-row');
+    if (!row) return;
 
-  function downloadJSON(content, filename) {
-    const blob = new Blob([content], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 100);
-  }
+    // Ambil SEMUA nilai dari form untuk membangun preview
+    const merek = row.querySelector('.field-merek').value;
+    const kategori = row.querySelector('.field-kategori').value;
+    const sub1 = row.querySelector('.field-sub1').value;
+    const sub1_2 = row.querySelector('.field-sub1_2').value;
+    const gambar = row.querySelector('.field-gambar').value;
 
-  window.addEventListener('load', () => {
-    addElementBtn.click();
-  });
-  </script>
-<div class="search-floating-container"><input type="text" id="floatingSearchInput" placeholder="cari artikel..." autocomplete="off"><span id="floatingSearchClear" class="clear-button"></span><div id="floatingSearchResults" class="floating-results-container"></div></div>
-<section id="related-marquee-section"><div id="related-marquee-container"></div></section><script defer src="/ext/marquee-url.js"></script>
-<script defer src="/ext/iposbrowser.js"></script><script defer src="/ext/markdown.js"></script>
+    // Perbarui Gambar Preview dan Judul
+    if (input.classList.contains('field-gambar')) {
+      const imgEl = row.querySelector('.preview-image');
+      const placeholder = 'https://via.placeholder.com/400x200.png?text=Image+Preview';
+      imgEl.src = gambar || placeholder;
+      imgEl.onerror = () => { imgEl.src = placeholder; imgEl.onerror = null; };
+
+      let imageNameTitle = 'Nama File...';
+      if (gambar) {
+        try {
+          const fullFilename = gambar.split('/').pop();
+          const filenameWithoutExt = fullFilename.replace(/\.(jpg|jpeg|png)$/i, '');
+          imageNameTitle = filenameWithoutExt.replace(/_/g, ' ');
+        } catch (e) {}
+      }
+      row.querySelector('.preview-title').textContent = escapeHtml(imageNameTitle);
+    }
+
+    // Perbarui Teks Preview (Hierarki)
+    const hierarki = `${merek} ${kategori ? '&rarr; ' + escapeHtml(kategori) : ''} ${sub1 ? '&rarr; ' + escapeHtml(sub1) : ''}`;
+    row.querySelector('.preview-desc').innerHTML = hierarki;
+    row.querySelector('.preview-date').textContent = escapeHtml(sub1_2 || '...');
+  });
+
+  // --- 7. Generate JSON (DIPERBARUI TOTAL) ---
+  generateJsonBtn.addEventListener('click', () => {
+    const currentMerek = categoryNameInput.value.trim();
+    if (!currentMerek) {
+      alert('Nama "Merek" (kategori utama) harus diisi!');
+      categoryNameInput.focus();
+      return;
+    }
+
+    const elementDivs = [...elementsContainer.querySelectorAll('.element-row')];
+    if (elementDivs.length === 0) {
+      alert('Tambahkan minimal satu item produk!');
+      return;
+    }
+
+    const newElementsForThisMerek = [];
+
+    for (let div of elementDivs) {
+      // (DIUBAH) Buat objek item
+      const item = {
+        Merek: div.querySelector('.field-merek').value.trim(),
+        Kategori: div.querySelector('.field-kategori').value.trim(),
+        SubKategori1: div.querySelector('.field-sub1').value.trim(),
+        SubKategori1_2: div.querySelector('.field-sub1_2').value.trim(),
+        Gambar: div.querySelector('.field-gambar').value.trim()
+      };
+
+      // Validasi
+      if (!item.Merek || !item.Kategori || !item.Gambar) {
+        alert('Merek, Kategori, dan URL Gambar harus diisi di semua item.');
+        div.querySelector('.field-kategori').focus(); // Fokus ke field yang mungkin kosong
+        return;
+      }
+
+      // Ganti string kosong dengan "" agar konsisten
+      if (item.SubKategori1 === '') item.SubKategori1 = "";
+      if (item.SubKategori1_2 === '') item.SubKategori1_2 = "";
+
+      newElementsForThisMerek.push(item);
+    }
+
+    // (Sangat Penting) Gabungkan data baru dengan data lama
+
+    // 1. Ambil semua data LAMA yang BUKAN Merek saat ini
+    const otherData = (Array.isArray(existingData))
+       ? existingData.filter(item => item.Merek !== currentMerek)
+       : [];
+
+    // 2. Gabungkan data lama (yang tidak tersentuh) + data baru (yang diedit)
+    const finalDataArray = [...otherData, ...newElementsForThisMerek];
+
+    // Urutkan (opsional tapi bagus)
+    finalDataArray.sort((a, b) => {
+        if (a.Merek !== b.Merek) return a.Merek.localeCompare(b.Merek);
+        if (a.Kategori !== b.Kategori) return a.Kategori.localeCompare(b.Kategori);
+        if (a.SubKategori1 !== b.SubKategori1) return a.SubKategori1.localeCompare(b.SubKategori1);
+        return a.Gambar.localeCompare(b.Gambar);
+    });
+
+    // 3. Buat JSON
+    const jsonStr = JSON.stringify(finalDataArray, null, 2);
+    downloadJSON(jsonStr, 'data_updated.json');
+  });
+
+  // --- Fungsi Bantuan (Tidak Berubah) ---
+  function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function downloadJSON(content, filename) {
+    const blob = new Blob([content], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 100);
+  }
+
+  // (DIHAPUS) window.addEventListener('load', ...)
+  // Tidak perlu lagi menambah baris kosong di awal.
+
+</script>
 </body>
 </html>
