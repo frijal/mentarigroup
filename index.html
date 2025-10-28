@@ -23,6 +23,8 @@
             text-align: center;
             color: #111;
         }
+
+        /* === (DIPERBARUI) Area Filter === */
         #filterContainer {
             background-color: #fff;
             padding: 20px;
@@ -30,36 +32,66 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             margin-bottom: 30px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            /* Grid 4 kolom di desktop */
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             align-items: end;
         }
-        .filter-group {
+
+        .filter-group, .search-group {
             display: flex;
             flex-direction: column;
         }
-        .filter-group label {
+        .filter-group label, .search-group label {
             font-weight: 600;
             font-size: 0.9em;
             margin-bottom: 5px;
             color: #444;
         }
-        .filter-group select, #resetBtn {
+        .filter-group select, #resetBtn, #searchBox {
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 1em;
+            box-sizing: border-box; /* Pastikan padding tidak merusak layout */
         }
+
+        /* (BARU) Atur layout search box */
+        .search-group {
+            /* Span 2 kolom */
+            grid-column: span 2;
+        }
+        /* (BARU) Atur layout dropdown */
+        .filter-group {
+            grid-column: span 1;
+        }
+        /* (BARU) Atur layout tombol reset */
         #resetBtn {
             background-color: #6c757d;
             color: white;
             cursor: pointer;
             border: none;
-            padding: 11px 10px;
+            /* Span 2 kolom agar sejajar dengan search */
+            grid-column: span 2;
         }
         #resetBtn:hover {
             background-color: #5a6268;
         }
+
+        /* (BARU) Responsif untuk layar kecil */
+        @media (max-width: 768px) {
+            #filterContainer {
+                grid-template-columns: 1fr 1fr; /* 2 kolom di tablet/HP */
+            }
+            .search-group, #resetBtn {
+                grid-column: 1 / -1; /* Full width */
+            }
+            .filter-group {
+                grid-column: span 1; /* Tetap 1 kolom */
+            }
+        }
+        /* === Akhir Area Filter === */
+
         #outputContainer {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -115,8 +147,6 @@
             color: #777;
             margin-top: 5px;
         }
-
-        /* === (BARU) CSS untuk nama file di kartu === */
         .card .image-name {
             font-size: 0.9em;
             font-weight: 500;
@@ -126,13 +156,10 @@
             background-color: #f8f9fa;
             border: 1px solid #e9ecef;
             border-radius: 5px;
-            /* Memastikan teks tidak terlalu panjang */
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        /* === Akhir CSS Baru === */
-
         .status-message, .error-message {
             text-align: center;
             font-size: 1.2em;
@@ -163,15 +190,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 
-  <script>
+    <script>
         const outputContainer = document.getElementById('outputContainer');
         const filterContainer = document.getElementById('filterContainer');
-        const jsonFilePath = 'data.json'; // Pastikan ini 'data.json'
+        const jsonFilePath = 'data.json';
 
         let allProducts = [];
 
-        // (BARU) Siapkan referensi untuk semua elemen filter
-        let filterMerek, filterKategori, filterSub1, filterSub1_2, resetBtn;
+        // (DIPERBARUI) Siapkan referensi untuk semua elemen filter
+        let filterMerek, filterKategori, filterSub1, filterSub1_2, resetBtn, searchBox;
 
         document.addEventListener('DOMContentLoaded', fetchData);
 
@@ -179,8 +206,31 @@
             fetch(jsonFilePath)
                 .then(response => response.json())
                 .then(jsonData => {
-                    allProducts = jsonData;
-                    // (BARU) Panggil fungsi inisialisasi filter yang baru
+
+                    // (DIPERBARUI) Pre-process data sekali saat dimuat
+                    allProducts = jsonData.map(item => {
+                        let imageNameTitle = ''; // Hitung sekali
+                        if (item.Gambar) {
+                            const fullFilename = item.Gambar.split('/').pop();
+                            const filenameWithoutExt = fullFilename.replace(/\.(jpg|jpeg|png)$/i, '');
+                            imageNameTitle = filenameWithoutExt.replace(/_/g, ' ');
+                        }
+
+                        // Tambahkan ke item untuk displayData
+                        item.imageNameTitle = imageNameTitle;
+
+                        // Buat teks pencarian
+                        item.searchableText = [
+                            item.Merek,
+                            item.Kategori,
+                            item.SubKategori1,
+                            item.SubKategori1_2,
+                            imageNameTitle // Gunakan nama yang sudah dihitung
+                        ].filter(Boolean).join(' ').toLowerCase();
+
+                        return item;
+                    });
+
                     initializeFilters();
                     displayData(allProducts);
                 })
@@ -190,14 +240,15 @@
                 });
         }
 
-        // --- (PERBAIKAN TOTAL) Fungsi Filter Bertingkat Baru ---
+        // --- (TETAP) Fungsi Filter Bertingkat dari skrip sebelumnya ---
 
-        /**
-         * (BARU) Fungsi untuk membuat HTML filter & menambahkan event listeners
-         */
         function initializeFilters() {
-            // 1. Buat HTML untuk semua filter sekaligus
+            // (DIPERBARUI) Buat HTML untuk semua filter, termasuk search box
             filterContainer.innerHTML = `
+                <div class="search-group">
+                    <label for="searchBox">Cari Produk</label>
+                    <input type="text" id="searchBox" placeholder="Ketik nama file, merek, kategori...">
+                </div>
                 <div class="filter-group">
                     <label for="filterMerek">Merek</label>
                     <select id="filterMerek">
@@ -216,7 +267,7 @@
                         <option value="">-- Tampilkan Semua --</option>
                     </select>
                 </div>
-                <div class_alias="filter-group">
+                <div class="filter-group">
                     <label for="filterSub1_2">Sub Kategori 1.2</label>
                     <select id="filterSub1_2">
                         <option value="">-- Tampilkan Semua --</option>
@@ -225,44 +276,36 @@
                 <button id="resetBtn">Reset Filter</button>
             `;
 
-            // 2. Dapatkan referensi ke elemen-elemen tersebut
+            // (DIPERBARUI) Dapatkan referensi elemen
+            searchBox = document.getElementById('searchBox');
             filterMerek = document.getElementById('filterMerek');
             filterKategori = document.getElementById('filterKategori');
             filterSub1 = document.getElementById('filterSub1');
             filterSub1_2 = document.getElementById('filterSub1_2');
             resetBtn = document.getElementById('resetBtn');
 
-            // 3. Isi dropdown Merek (satu-satunya yang terisi di awal)
+            // Isi dropdown Merek
             const mereks = [...new Set(allProducts.map(item => item.Merek).filter(Boolean))].sort();
             updateSelectOptions(filterMerek, mereks);
 
-            // 4. Tambahkan Event Listeners
+            // (DIPERBARUI) Tambahkan Event Listeners
+            searchBox.addEventListener('input', applyFilters); // Panggil applyFilters saat mengetik
             filterMerek.addEventListener('change', handleMerekChange);
             filterKategori.addEventListener('change', handleKategoriChange);
             filterSub1.addEventListener('change', handleSub1Change);
-            filterSub1_2.addEventListener('change', applyFilters); // Perubahan terakhir hanya memfilter
+            filterSub1_2.addEventListener('change', applyFilters);
 
             resetBtn.addEventListener('click', () => {
+                searchBox.value = ''; // (BARU) Kosongkan search box
                 filterMerek.value = '';
-                // Panggil handler Merek untuk memicu reset bertingkat
                 handleMerekChange();
             });
         }
 
-        /**
-         * (BARU) Fungsi bantuan untuk mengisi ulang <select>
-         */
         function updateSelectOptions(selectElement, options) {
-            // Simpan nilai "Tampilkan Semua"
             const defaultValue = selectElement.options[0];
-
-            // Bersihkan opsi lama
             selectElement.innerHTML = '';
-
-            // Tambahkan kembali nilai default
             selectElement.appendChild(defaultValue);
-
-            // Isi dengan opsi baru
             options.forEach(opt => {
                 const optionElement = document.createElement('option');
                 optionElement.value = opt;
@@ -271,76 +314,56 @@
             });
         }
 
-        /**
-         * (BARU) Handler saat Merek berubah
-         */
         function handleMerekChange() {
             const selectedMerek = filterMerek.value;
-
-            // 1. Reset semua 'anak'
             updateSelectOptions(filterKategori, []);
             updateSelectOptions(filterSub1, []);
             updateSelectOptions(filterSub1_2, []);
 
-            // 2. Jika Merek dipilih, isi Kategori
             if (selectedMerek) {
                 const productsByMerek = allProducts.filter(p => p.Merek === selectedMerek);
                 const kategoris = [...new Set(productsByMerek.map(item => item.Kategori).filter(Boolean))].sort();
                 updateSelectOptions(filterKategori, kategoris);
             }
-
-            // 3. Terapkan filter
             applyFilters();
         }
 
-        /**
-         * (BARU) Handler saat Kategori berubah
-         */
         function handleKategoriChange() {
             const selectedMerek = filterMerek.value;
             const selectedKategori = filterKategori.value;
-
-            // 1. Reset 'anak'
             updateSelectOptions(filterSub1, []);
             updateSelectOptions(filterSub1_2, []);
 
-            // 2. Jika Merek DAN Kategori dipilih, isi Sub1
             if (selectedMerek && selectedKategori) {
                 const productsByKategori = allProducts.filter(p => p.Merek === selectedMerek && p.Kategori === selectedKategori);
                 const sub1s = [...new Set(productsByKategori.map(item => item.SubKategori1).filter(Boolean))].sort();
                 updateSelectOptions(filterSub1, sub1s);
             }
-
-            // 3. Terapkan filter
             applyFilters();
         }
 
-        /**
-         * (BARU) Handler saat Sub1 berubah
-         */
         function handleSub1Change() {
             const selectedMerek = filterMerek.value;
             const selectedKategori = filterKategori.value;
             const selectedSub1 = filterSub1.value;
-
-            // 1. Reset 'anak'
             updateSelectOptions(filterSub1_2, []);
 
-            // 2. Jika Merek, Kategori, DAN Sub1 dipilih, isi Sub1.2
             if (selectedMerek && selectedKategori && selectedSub1) {
                 const productsBySub1 = allProducts.filter(p => p.Merek === selectedMerek && p.Kategori === selectedKategori && p.SubKategori1 === selectedSub1);
                 const sub1_2s = [...new Set(productsBySub1.map(item => item.SubKategori1_2).filter(Boolean))].sort();
                 updateSelectOptions(filterSub1_2, sub1_2s);
             }
-
-            // 3. Terapkan filter
             applyFilters();
         }
 
         /**
-         * (DIPERBARUI) Fungsi ini sekarang hanya membaca nilai dan memfilter
+         * (DIPERBARUI) Fungsi ini sekarang juga menyertakan filter PENCARIAN
          */
         function applyFilters() {
+            // (BARU) Ambil nilai pencarian
+            const searchTerm = searchBox.value.toLowerCase().trim();
+
+            // Ambil nilai dropdown
             const selectedMerek = filterMerek.value;
             const selectedKategori = filterKategori.value;
             const selectedSub1 = filterSub1.value;
@@ -348,6 +371,7 @@
 
             let filteredData = allProducts;
 
+            // 1. Terapkan filter dropdown
             if (selectedMerek) {
                 filteredData = filteredData.filter(item => item.Merek === selectedMerek);
             }
@@ -361,6 +385,13 @@
                 filteredData = filteredData.filter(item => item.SubKategori1_2 === selectedSub1_2);
             }
 
+            // 2. (BARU) Terapkan filter pencarian PADA HASIL dropdown
+            if (searchTerm) {
+                filteredData = filteredData.filter(item =>
+                    item.searchableText.includes(searchTerm)
+                );
+            }
+
             displayData(filteredData);
         }
 
@@ -368,7 +399,8 @@
 
 
         /**
-         * (TIDAK BERUBAH) Fungsi displayData sudah benar
+         * (DIPERBARUI) Fungsi displayData sekarang menggunakan
+         * 'item.imageNameTitle' yang sudah diproses sebelumnya
          */
         function displayData(data) {
             outputContainer.innerHTML = '';
@@ -385,12 +417,8 @@
 
                 const imageHtml = `<img src="${imageUrl}" alt="${item.Merek || 'Gambar Produk'}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200?text=Gambar+Rusak';">`;
 
-                let imageNameTitle = '';
-                if (item.Gambar) {
-                    const fullFilename = item.Gambar.split('/').pop();
-                    const filenameWithoutExt = fullFilename.replace(/\.(jpg|jpeg|png)$/i, '');
-                    imageNameTitle = filenameWithoutExt.replace(/_/g, ' ');
-                }
+                // (DIPERBARUI) Ambil nama file yang sudah diproses
+                const imageNameTitle = item.imageNameTitle || '';
 
                 let contentHtml = '<div class="card-content">';
                 contentHtml += `<h3>${item.Merek || 'Tanpa Merek'}</h3>`;
@@ -407,6 +435,7 @@
                     contentHtml += `<p class="subkategori">${subKategoriHtml}</p>`;
                 }
 
+                // Tampilkan nama file di kartu
                 if (imageNameTitle) {
                     contentHtml += `<p class="image-name">${imageNameTitle}</p>`;
                 }
@@ -419,6 +448,8 @@
                     const linkWrapper = document.createElement('a');
                     linkWrapper.href = item.Gambar;
                     linkWrapper.setAttribute('data-lightbox', 'gallery-produk');
+
+                    // Gunakan nama file untuk judul lightbox
                     linkWrapper.setAttribute('data-title', imageNameTitle);
 
                     const card = document.createElement('div');
