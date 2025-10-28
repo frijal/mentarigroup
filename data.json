@@ -1,34 +1,16 @@
-{
-  "🖥️ Kategori 1": [
-    [
-      "Judul Item 1",
-      "Rp 50.000",
-      "https://via.placeholder.com/300x180.png?text=Item+1",
-      "2025-09-28T07:31:14.115+00:00",
-      "Deskripsi Item 1"
-    ],
-    [
-      "Judul Item 2",
-      "Rp 75.000",
-      "https://via.placeholder.com/300x180.png?text=Item+2",
-      "2025-10-28T07:31:15.115+00:00",
-      "Deskripsi Item 2"
-    ]
-  ],
-  "☢️ Kategori 2": [
-    [
-      "Judul Item 1",
-      "Rp 120.000",
-      "https://via.placeholder.com/300x180.png?text=Item+3",
-      "2025-09-28T07:31:11.115+00:00",
-      "Deskripsi Item 1"
-    ],
-    [
-      "Judul Item 2",
-      "Rp 150.000",
-      "https://via.placeholder.com/300x180.png?text=Item+4",
-      "2025-10-28T07:31:11.115+00:00",
-      "Deskripsi Item 2"
-    ]
-  ]
-}
+[
+  {
+    "Merek": "Weiler",
+    "Kategori": "Maintenance",
+    "SubKategori1": "3-FloorBrushes",
+    "SubKategori1_2": "1-CoarseSweeps",
+    "Gambar": "https://mentarigroup.pages.dev/data/Weiler/Maintenance/3-FloorBrushes/1-CoarseSweeps/CoarseSweeping.jpg"
+  },
+  {
+    "Merek": "Weiler",
+    "Kategori": "Maintenance",
+    "SubKategori1": "3-FloorBrushes",
+    "SubKategori1_2": "1-CoarseSweeps",
+    "Gambar": "https://mentarigroup.pages.dev/data/Weiler/Maintenance/3-FloorBrushes/1-CoarseSweeps/CoarseSweeping2.jpg"
+  }
+]
