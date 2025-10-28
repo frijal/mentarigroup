@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Viewer & Editor | Frijal</title>
+<link rel="icon" href="data:,">
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f4f4f4;
+    color: #222;
+    margin: 0;
+    padding: 1rem;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  h1 { font-size: 1.5rem; margin: 0; }
+  input[type="file"] { display: none; }
+  label, button {
+    background: #0078d7;
+    color: white;
+    border: none;
+    padding: .6rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: .9rem;
+  }
+  label:hover, button:hover { background: #005ea0; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 1rem;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,.1);
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: .5rem;
+    font-size: .9rem;
+  }
+  th { background: #eaeaea; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  .delete-btn {
+    background: #e53935;
+    border: none;
+    color: white;
+    padding: .3rem .6rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .delete-btn:hover { background: #c62828; }
+  #tables {
+    margin-top: 2rem;
+  }
+</style>
+<meta property="og:image" content="https://frijal.pages.dev/img/json-editor.webp">
+  <meta property="og:image:alt" content="JSON Viewer & Editor | Frijal">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://frijal.pages.dev/img/json-editor.webp">
+  <meta itemprop="image" content="https://frijal.pages.dev/img/json-editor.webp">
+<link rel="stylesheet" href="/ext/marquee-url.css"><link rel="alternate" type="application/rss+xml" title="30 artikel baru bikin." href="https://frijal.pages.dev/rss.xml" />
+    <meta property="article:published_time" content="2025-10-28T07:31:15.115+00:00">
+</head>
+<body>
+
+<header>
+  <h1>JSON Viewer & Editor</h1>
+<div id="iposbrowser"></div>
+  <div>
+    <label for="fileInput">📂 Buka JSON</label>
+    <input type="file" id="fileInput" accept=".json">
+    <button id="saveBtn" disabled>💾 Simpan JSON</button>
+  </div>
+</header>
+
+<div id="tables"></div>
+
+<script>
+let jsonData = {};
+
+document.getElementById('fileInput').addEventListener('change', handleFile);
+document.getElementById('saveBtn').addEventListener('click', saveFile);
+
+function handleFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      jsonData = JSON.parse(e.target.result);
+      renderTables();
+      document.getElementById('saveBtn').disabled = false;
+    } catch (err) {
+      alert('Gagal membaca file JSON: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function renderTables() {
+  const container = document.getElementById('tables');
+  container.innerHTML = '';
+  for (const [table, rows] of Object.entries(jsonData)) {
+    const section = document.createElement('section');
+    const title = document.createElement('h2');
+    title.textContent = `📁 ${table} (${rows.length} entri)`;
+    section.appendChild(title);
+
+    const tableEl = document.createElement('table');
+    if (rows.length > 0) {
+      const thead = document.createElement('thead');
+      const headerRow = document.createElement('tr');
+      Object.keys(rows[0]).forEach(col => {
+        const th = document.createElement('th');
+        th.textContent = col;
+        headerRow.appendChild(th);
+      });
+      const thDel = document.createElement('th');
+      thDel.textContent = 'Aksi';
+      headerRow.appendChild(thDel);
+      thead.appendChild(headerRow);
+      tableEl.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      rows.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        Object.values(row).forEach(val => {
+          const td = document.createElement('td');
+          td.textContent = val ?? '';
+          tr.appendChild(td);
+        });
+        const tdDel = document.createElement('td');
+        const btn = document.createElement('button');
+        btn.textContent = '🗑️';
+        btn.className = 'delete-btn';
+        btn.onclick = () => {
+          if (confirm('Hapus baris ini?')) {
+            rows.splice(idx, 1);
+            renderTables();
+          }
+        };
+        tdDel.appendChild(btn);
+        tr.appendChild(tdDel);
+        tbody.appendChild(tr);
+      });
+      tableEl.appendChild(tbody);
+    } else {
+      const empty = document.createElement('p');
+      empty.textContent = 'Tabel kosong.';
+      section.appendChild(empty);
+    }
+
+    // tombol hapus seluruh tabel
+    const delTableBtn = document.createElement('button');
+    delTableBtn.textContent = '🗑️ Hapus tabel ini';
+    delTableBtn.style.background = '#9c27b0';
+    delTableBtn.onclick = () => {
+      if (confirm(`Hapus seluruh tabel "${table}"?`)) {
+        delete jsonData[table];
+        renderTables();
+      }
+    };
+    section.appendChild(delTableBtn);
+    section.appendChild(tableEl);
+    container.appendChild(section);
+  }
+}
+
+function saveFile() {
+  const blob = new Blob([JSON.stringify(jsonData, null, 2)], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "edited-data.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+<div class="search-floating-container"><input type="text" id="floatingSearchInput" placeholder="cari artikel..." autocomplete="off"><span id="floatingSearchClear" class="clear-button"></span><div id="floatingSearchResults" class="floating-results-container"></div></div>
+<section id="related-marquee-section"><div id="related-marquee-container"></div></section><script defer src="/ext/marquee-url.js"></script>
+<script defer src="/ext/iposbrowser.js"></script><script defer src="/ext/markdown.js"></script>
+</body>
+</html>
