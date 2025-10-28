@@ -158,7 +158,7 @@
     <script>
         const outputContainer = document.getElementById('outputContainer');
         const filterContainer = document.getElementById('filterContainer');
-        const jsonFilePath = 'data.json';
+        const jsonFilePath = 'data.json'; // Tetap menggunakan 'data.json' sesuai skrip Anda
 
         let allProducts = [];
 
@@ -278,7 +278,7 @@
 
                 const cardInnerHtml = imageHtml + contentHtml;
 
-                // --- (BARU) LOGIKA LIGHTBOX ---
+                // --- (DIUBAH) LOGIKA LIGHTBOX ---
 
                 if (item.Gambar) {
                     // JIKA ADA GAMBAR, buat kartu sebagai link lightbox
@@ -288,9 +288,21 @@
                     // 'gallery-produk' mengelompokkan semua gambar di halaman ini
                     linkWrapper.setAttribute('data-lightbox', 'gallery-produk');
 
-                    // Buat judul kustom untuk lightbox
-                    const title = `${item.Merek} (${item.Kategori}${item.SubKategori1 ? ' / ' + item.SubKategori1 : ''})`;
-                    linkWrapper.setAttribute('data-title', title);
+                    // === (DIUBAH) Logika untuk membuat judul dari nama file ===
+
+                    // 1. Dapatkan nama file dari URL (misal: "My_Image_File.jpg")
+                    const fullFilename = item.Gambar.split('/').pop();
+
+                    // 2. Hapus ekstensi (misal: "My_Image_File")
+                    //    Regex ini mencari .jpg, .jpeg, atau .png di akhir string
+                    const filenameWithoutExt = fullFilename.replace(/\.(jpg|jpeg|png)$/i, '');
+
+                    // 3. Ganti semua underscore (_) dengan spasi (misal: "My Image File")
+                    const newTitle = filenameWithoutExt.replace(/_/g, ' ');
+
+                    // 4. Set judul baru untuk lightbox
+                    linkWrapper.setAttribute('data-title', newTitle);
+                    // === Akhir perubahan ===
 
                     // Buat card-nya
                     const card = document.createElement('div');
