@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mentari Megah Perkasa</title>
+    <title>Penampil JSON Produk (Online)</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet" />
+
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -20,8 +23,6 @@
             text-align: center;
             color: #111;
         }
-
-        /* === (BARU) Area Filter === */
         #filterContainer {
             background-color: #fff;
             padding: 20px;
@@ -29,10 +30,9 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             margin-bottom: 30px;
             display: grid;
-            /* Buat grid responsif untuk filter */
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            align-items: end; /* Jaga agar tombol "Reset" sejajar */
+            align-items: end;
         }
         .filter-group {
             display: flex;
@@ -55,18 +55,23 @@
             color: white;
             cursor: pointer;
             border: none;
-            padding: 11px 10px; /* Samakan tinggi dengan select */
+            padding: 11px 10px;
         }
         #resetBtn:hover {
             background-color: #5a6268;
         }
-        /* === Akhir Area Filter === */
-
         #outputContainer {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
+
+        /* (BARU) Hapus style link default dari wrapper <a> */
+        #outputContainer a {
+            text-decoration: none;
+            color: inherit;
+        }
+
         .card {
             background-color: #ffffff;
             border: 1px solid #ddd;
@@ -74,11 +79,27 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.08);
             overflow: hidden;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            height: 100%; /* (BARU) Pastikan kartu mengisi wrapper <a> */
+            cursor: pointer; /* Tunjukkan ini bisa diklik */
         }
-        .card:hover {
+
+        /* (BARU) Kartu yang tidak bisa diklik */
+        .card.card-no-link {
+            cursor: default;
+        }
+
+        /* (DIPERBARUI) Efek hover sekarang ada di link, bukan card */
+        #outputContainer a:hover .card {
             transform: translateY(-5px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.12);
         }
+
+        /* (BARU) Efek hover untuk kartu yang tidak bisa diklik */
+        .card.card-no-link:hover {
+            transform: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        }
+
         .card img {
             width: 100%;
             height: 200px;
@@ -131,36 +152,24 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
     <script>
         const outputContainer = document.getElementById('outputContainer');
         const filterContainer = document.getElementById('filterContainer');
         const jsonFilePath = 'data.json';
 
-        // (BARU) Variabel global untuk menyimpan semua data
         let allProducts = [];
 
-        // Panggil fungsi untuk mengambil data saat halaman dimuat
         document.addEventListener('DOMContentLoaded', fetchData);
 
-        /**
-         * (DIPERBARUI) Ambil data, simpan di global, lalu tampilkan
-         */
         function fetchData() {
             fetch(jsonFilePath)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Gagal memuat file: ${response.status} ${response.statusText}`);
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(jsonData => {
-                    // Simpan data ke variabel global
                     allProducts = jsonData;
-
-                    // (BARU) Buat filter dropdown berdasarkan data
                     populateFilters(allProducts);
-
-                    // Tampilkan semua data saat pertama kali dimuat
                     displayData(allProducts);
                 })
                 .catch(error => {
@@ -169,18 +178,12 @@
                 });
         }
 
-        /**
-         * (BARU) Fungsi untuk membuat dropdown filter
-         */
         function populateFilters(data) {
-            // 1. Ekstrak semua nilai unik, filter nilai kosong (null/undefined/"")
-            // Gunakan 'Set' untuk mendapatkan nilai unik secara otomatis
             const mereks = [...new Set(data.map(item => item.Merek).filter(Boolean))].sort();
             const kategoris = [...new Set(data.map(item => item.Kategori).filter(Boolean))].sort();
             const sub1s = [...new Set(data.map(item => item.SubKategori1).filter(Boolean))].sort();
             const sub1_2s = [...new Set(data.map(item => item.SubKategori1_2).filter(Boolean))].sort();
 
-            // 2. Buat HTML untuk dropdown
             filterContainer.innerHTML = `
                 ${createSelect('Merek', mereks, 'filterMerek')}
                 ${createSelect('Kategori', kategoris, 'filterKategori')}
@@ -188,28 +191,19 @@
                 ${createSelect('Sub Kategori 1.2', sub1_2s, 'filterSub1_2')}
             `;
 
-            // 3. Tambahkan tombol Reset
             const resetBtn = document.createElement('button');
             resetBtn.id = 'resetBtn';
             resetBtn.textContent = 'Reset Filter';
             resetBtn.onclick = () => {
-                // Set semua select kembali ke nilai ""
                 filterContainer.querySelectorAll('select').forEach(select => select.value = '');
-                // Tampilkan kembali semua produk
                 displayData(allProducts);
             };
             filterContainer.appendChild(resetBtn);
         }
 
-        /**
-         * (BARU) Fungsi bantuan untuk membuat satu grup dropdown
-         */
         function createSelect(label, options, id) {
-            // Jangan tampilkan dropdown jika tidak ada opsi
             if (options.length === 0) return '';
-
             let optionsHtml = options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
-
             return `
                 <div class="filter-group">
                     <label for="${id}">${label}</label>
@@ -221,17 +215,12 @@
             `;
         }
 
-        /**
-         * (BARU) Fungsi untuk memfilter dan menampilkan ulang data
-         */
         function applyFilters() {
-            // Ambil nilai filter yang sedang dipilih
             const selectedMerek = document.getElementById('filterMerek')?.value;
             const selectedKategori = document.getElementById('filterKategori')?.value;
             const selectedSub1 = document.getElementById('filterSub1')?.value;
             const selectedSub1_2 = document.getElementById('filterSub1_2')?.value;
 
-            // Mulai dengan semua data, lalu filter secara berurutan
             let filteredData = allProducts;
 
             if (selectedMerek) {
@@ -247,29 +236,28 @@
                 filteredData = filteredData.filter(item => item.SubKategori1_2 === selectedSub1_2);
             }
 
-            // Tampilkan data yang sudah difilter
             displayData(filteredData);
         }
 
         /**
          * (DIPERBARUI) Fungsi untuk menampilkan data
+         * Sekarang membungkus kartu dengan <a> jika item.Gambar ada
          */
         function displayData(data) {
-            // Kosongkan kontainer
             outputContainer.innerHTML = '';
 
-            // (DIPERBARUI) Cek jika hasil filter kosong
             if (!Array.isArray(data) || data.length === 0) {
                 outputContainer.innerHTML = '<p class="status-message">Tidak ada produk yang cocok dengan filter Anda.</p>';
                 return;
             }
 
-            // Loop untuk setiap item dalam data
             data.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'card';
+                // Tentukan URL gambar
+                const imageUrl = item.Gambar
+                    ? item.Gambar
+                    : `https://via.placeholder.com/300x200?text=${encodeURIComponent(item.Merek || 'Gambar')}`;
 
-                const imageUrl = item.Gambar ? item.Gambar : `https://via.placeholder.com/300x200?text=${encodeURIComponent(item.Merek || 'Gambar')}`;
+                // Buat HTML bagian dalam (gambar + teks)
                 const imageHtml = `<img src="${imageUrl}" alt="${item.Merek || 'Gambar Produk'}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200?text=Gambar+Rusak';">`;
 
                 let contentHtml = '<div class="card-content">';
@@ -283,19 +271,50 @@
                         subKategoriHtml += ` &rarr; ${item.SubKategori1_2}`;
                     }
                 }
-
                 if (subKategoriHtml) {
                     contentHtml += `<p class="subkategori">${subKategoriHtml}</p>`;
                 }
-
                 contentHtml += '</div>';
 
-                card.innerHTML = imageHtml + contentHtml;
-                outputContainer.appendChild(card);
+                const cardInnerHtml = imageHtml + contentHtml;
+
+                // --- (BARU) LOGIKA LIGHTBOX ---
+
+                if (item.Gambar) {
+                    // JIKA ADA GAMBAR, buat kartu sebagai link lightbox
+                    const linkWrapper = document.createElement('a');
+                    linkWrapper.href = item.Gambar; // Link ke gambar asli
+
+                    // 'gallery-produk' mengelompokkan semua gambar di halaman ini
+                    linkWrapper.setAttribute('data-lightbox', 'gallery-produk');
+
+                    // Buat judul kustom untuk lightbox
+                    const title = `${item.Merek} (${item.Kategori}${item.SubKategori1 ? ' / ' + item.SubKategori1 : ''})`;
+                    linkWrapper.setAttribute('data-title', title);
+
+                    // Buat card-nya
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = cardInnerHtml;
+
+                    // Masukkan card ke dalam link, lalu link ke kontainer
+                    linkWrapper.appendChild(card);
+                    outputContainer.appendChild(linkWrapper);
+
+                } else {
+                    // JIKA TIDAK ADA GAMBAR, buat kartu biasa (tidak bisa diklik)
+                    const card = document.createElement('div');
+                    // Tambahkan class 'card-no-link' untuk styling
+                    card.className = 'card card-no-link';
+                    card.innerHTML = cardInnerHtml;
+
+                    // Langsung masukkan card ke kontainer
+                    outputContainer.appendChild(card);
+                }
+                // --- AKHIR LOGIKA LIGHTBOX ---
             });
         }
 
     </script>
-
 </body>
 </html>
