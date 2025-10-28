@@ -62,7 +62,7 @@ jobs:
             --include='artikel/***' \
             --include='ext/***' \
             --include='img/***' \
-            --include='artikel.json' \
+            --include='data.json' \
             --include='_redirects' \
             --include='_headers' \
             --include='*.html' \
