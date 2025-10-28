@@ -13,6 +13,15 @@
 /icon.png
   Cache-Control: public, max-age=604800, immutable
 
+/data/*.jpeg
+  Cache-Control: public, max-age=604800, immutable
+
+/data/*.jpg
+  Cache-Control: public, max-age=604800, immutable
+
+/data/*.png
+  Cache-Control: public, max-age=604800, immutable
+
 /favicon.ico
   Cache-Control: public, max-age=604800, immutable
 
@@ -40,11 +49,11 @@
 # 📜 Halaman utama dan navigasi
 /index.html
   X-Robots-Tag: index, follow
-  
+
 # 📜 Halaman disclaimer
 /disclaimer.html
   X-Robots-Tag: index, follow
-  
+
 # 📜 Halaman search
 /search.html
   X-Robots-Tag: index, follow

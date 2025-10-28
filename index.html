@@ -163,7 +163,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 
-   <script>
+  <script>
         const outputContainer = document.getElementById('outputContainer');
         const filterContainer = document.getElementById('filterContainer');
         const jsonFilePath = 'data.json'; // Pastikan ini 'data.json'
@@ -177,8 +177,7 @@
                 .then(response => response.json())
                 .then(jsonData => {
                     allProducts = jsonData;
-                    // (DIUBAH) Panggil populateFilters dengan level 0 (reset)
-                    populateFilters(0);
+                    populateFilters(0); // Mulai dengan reset (level 0)
                     displayData(allProducts);
                 })
                 .catch(error => {
@@ -187,62 +186,57 @@
                 });
         }
 
-        // --- (PERBAIKAN) Fungsi Filter Bertingkat ---
+        // --- (PERBAIKAN TOTAL) Fungsi Filter Bertingkat ---
 
         /**
          * (DIPERBARUI) Fungsi ini sekarang menerima 'changedLevel'
-         * level 0 = Reset semua
-         * level 1 = Merek diubah (reset Kategori, Sub1, Sub1.2)
-         * level 2 = Kategori diubah (reset Sub1, Sub1.2)
-         * level 3 = Sub1 diubah (reset Sub1.2)
-         * level 4 = Sub1.2 diubah (tidak reset apa-apa)
+         * level 0 = Reset semua atau Halaman dimuat
+         * level 1 = Merek diubah
+         * level 2 = Kategori diubah
+         * level 3 = Sub1 diubah
+         * level 4 = Sub1.2 diubah
          */
         function populateFilters(changedLevel = 0) {
             filterContainer.innerHTML = ''; // Selalu bersihkan container
 
-            // (DIPERBARUI) Dapatkan nilai HANYA jika levelnya tidak di-reset
-            const selectedMerek = (changedLevel <= 0) ? '' : document.getElementById('filterMerek')?.value || '';
-            const selectedKategori = (changedLevel <= 1) ? '' : document.getElementById('filterKategori')?.value || '';
-            const selectedSub1 = (changedLevel <= 2) ? '' : document.getElementById('filterSub1')?.value || '';
-            const selectedSub1_2 = (changedLevel <= 3) ? '' : document.getElementById('filterSub1_2')?.value || '';
+            // (PERBAIKAN) Logika pengambilan nilai yang benar
+            // Ambil nilai HANYA jika levelnya *lebih besar atau sama dengan*
+            // Ini memastikan nilai 'induk' tetap ada saat 'anak' diubah
+            const selectedMerek = (changedLevel >= 1) ? document.getElementById('filterMerek')?.value || '' : '';
+            const selectedKategori = (changedLevel >= 2) ? document.getElementById('filterKategori')?.value || '' : '';
+            const selectedSub1 = (changedLevel >= 3) ? document.getElementById('filterSub1')?.value || '' : '';
+            const selectedSub1_2 = (changedLevel >= 4) ? document.getElementById('filterSub1_2')?.value || '' : '';
 
-            // 1. Filter produk berdasarkan Merek (jika Merek dipilih)
-            const productsFilteredByMerek = selectedMerek
-                ? allProducts.filter(p => p.Merek === selectedMerek)
-                : allProducts;
+            // --- Filter Produk Secara Bertahap (HANYA untuk mendapatkan OPSI) ---
+            const productsFilteredByMerek = selectedMerek ? allProducts.filter(p => p.Merek === selectedMerek) : allProducts;
+            const productsFilteredByKategori = selectedKategori ? productsFilteredByMerek.filter(p => p.Kategori === selectedKategori) : productsFilteredByMerek;
+            const productsFilteredBySub1 = selectedSub1 ? productsFilteredByKategori.filter(p => p.SubKategori1 === selectedSub1) : productsFilteredByKategori;
 
-            // 2. Filter produk berdasarkan Kategori (jika Kategori dipilih)
-            const productsFilteredByKategori = selectedKategori
-                ? productsFilteredByMerek.filter(p => p.Kategori === selectedKategori)
-                : productsFilteredByMerek;
+            // --- Dapatkan Opsi Unik (PERBAIKAN LOGIKA) ---
 
-            // 3. Filter produk berdasarkan Sub Kategori 1 (jika Sub1 dipilih)
-            const productsFilteredBySub1 = selectedSub1
-                ? productsFilteredByKategori.filter(p => p.SubKategori1 === selectedSub1)
-                : productsFilteredByKategori;
-
-            // --- Dapatkan Opsi Unik untuk Setiap Dropdown ---
-
+            // 1. Opsi Merek: Selalu tampilkan semua
             const mereks = [...new Set(allProducts.map(item => item.Merek).filter(Boolean))].sort();
-            const kategoris = [...new Set(productsFilteredByMerek.map(item => item.Kategori).filter(Boolean))].sort();
-            const sub1s = [...new Set(productsFilteredByKategori.map(item => item.SubKategori1).filter(Boolean))].sort();
-            const sub1_2s = [...new Set(productsFilteredBySub1.map(item => item.SubKategori1_2).filter(Boolean))].sort();
+
+            // 2. Opsi Kategori: HANYA jika Merek dipilih
+            const kategoris = selectedMerek
+                ? [...new Set(productsFilteredByMerek.map(item => item.Kategori).filter(Boolean))].sort()
+                : []; // Kosong jika tidak ada Merek
+
+            // 3. Opsi Sub1: HANYA jika Kategori dipilih
+            const sub1s = selectedKategori
+                ? [...new Set(productsFilteredByKategori.map(item => item.SubKategori1).filter(Boolean))].sort()
+                : []; // Kosong jika tidak ada Kategori
+
+            // 4. Opsi Sub1.2: HANYA jika Sub1 dipilih
+            const sub1_2s = selectedSub1
+                ? [...new Set(productsFilteredBySub1.map(item => item.SubKategori1_2).filter(Boolean))].sort()
+                : []; // Kosong jika tidak ada Sub1
 
             // --- Buat HTML untuk Dropdown ---
-            // (DIPERBARUI) Kirim 'level' ke createSelect
             filterContainer.innerHTML += createSelect('Merek', mereks, 'filterMerek', selectedMerek, 1);
-
-            // Hanya tampilkan jika ada opsi
-            if (kategoris.length > 0 || selectedMerek) {
-                filterContainer.innerHTML += createSelect('Kategori', kategoris, 'filterKategori', selectedKategori, 2);
-            }
-            if (sub1s.length > 0 || selectedKategori) {
-                filterContainer.innerHTML += createSelect('Sub Kategori 1', sub1s, 'filterSub1', selectedSub1, 3);
-            }
-            if (sub1_2s.length > 0 || selectedSub1) {
-                // (PERBAIKAN) Kirim 'selectedSub1_2' (bukan '')
-                filterContainer.innerHTML += createSelect('Sub Kategori 1.2', sub1_2s, 'filterSub1_2', selectedSub1_2, 4);
-            }
+            filterContainer.innerHTML += createSelect('Kategori', kategoris, 'filterKategori', selectedKategori, 2);
+            filterContainer.innerHTML += createSelect('Sub Kategori 1', sub1s, 'filterSub1', selectedSub1, 3);
+            filterContainer.innerHTML += createSelect('Sub Kategori 1.2', sub1_2s, 'filterSub1_2', selectedSub1_2, 4);
 
             // Tambahkan Tombol Reset
             const resetBtn = document.createElement('button');
@@ -259,8 +253,10 @@
          * (DIPERBARUI) Fungsi ini sekarang menerima 'level'
          */
         function createSelect(label, options, id, selectedValue = '', level) {
-            // Kita tidak perlu 'if (options.length === 0) return '';' lagi
-            // agar dropdown tetap muncul (tapi kosong) dan bisa di-reset
+            // (PERBAIKAN) Jangan tampilkan dropdown jika tidak ada opsi, KECUALI Merek.
+            if (options.length === 0 && id !== 'filterMerek') {
+                return ''; // Sembunyikan dropdown jika kosong
+            }
 
             let optionsHtml = options.map(opt =>
                 `<option value="${opt}" ${opt === selectedValue ? 'selected' : ''}>${opt}</option>`
@@ -281,8 +277,8 @@
          * (DIPERBARUI) Fungsi ini menerima 'changedLevel'
          */
         function onFilterChange(changedLevel) {
-            populateFilters(changedLevel); // Kirim level ke populateFilters
-            applyFilters();
+            populateFilters(changedLevel); // Bangun ulang filter
+            applyFilters(); // Terapkan filter ke tampilan
         }
 
         /**
