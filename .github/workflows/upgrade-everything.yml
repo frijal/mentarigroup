@@ -7,7 +7,10 @@ on:
   # 2. Dijalankan otomatis setiap bulan, tanggal 1, jam 2 UTC
   schedule:
     - cron: '0 2 1 * *'
-
+permissions:
+  contents: write  # Diperlukan jika action juga push commit sebelum buat PR
+  pull-requests: write # Izin PENTING untuk membuat PR
+  
 jobs:
   maintenance-pr:
     runs-on: ubuntu-latest
