@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Layar Kosong Multi PDF Viewer & Dashboard</title>
+    <title>Multi PDF Viewer & Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -291,17 +291,37 @@
         }
 
         function renderPage(pageNum) {
-            if (renderedPages.has(pageNum)) return Promise.resolve();
-            return pdfDoc.getPage(pageNum).then(page => {
-                const canvas = document.getElementById(`canvas-page-${pageNum}`);
-                const ctx = canvas.getContext('2d');
-                const viewport = page.getViewport({ scale: scale });
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                const renderContext = { canvasContext: ctx, viewport: viewport };
-                return page.render(renderContext).promise.then(() => { renderedPages.add(pageNum); });
-            });
-        }
+    if (renderedPages.has(pageNum)) return Promise.resolve();
+    return pdfDoc.getPage(pageNum).then(page => {
+        const canvas = document.getElementById(`canvas-page-${pageNum}`);
+        const ctx = canvas.getContext('2d');
+
+        // 1. Deteksi rasio kepadatan pixel layar (HP/Laptop modern biasanya 2x atau 3x)
+        const dpr = window.devicePixelRatio || 1;
+
+        // 2. Naikkan skala dasar render internal dari 1.3 ke 2.0 agar gambar super tajam
+        const viewport = page.getViewport({ scale: 2.0 });
+
+        // 3. Kalikan ukuran canvas dengan DPR (Resolusi internal canvas jadi berkali lipat lebih tinggi)
+        canvas.height = viewport.height * dpr;
+        canvas.width = viewport.width * dpr;
+
+        // 4. Gunakan CSS untuk memaksa canvas menciut pas dengan ukuran layar (Trik rahasia ketajaman)
+        canvas.style.width = '100%';
+        canvas.style.height = 'auto';
+
+        // 5. Transformasikan konteks gambar agar PDF.js menggambar sesuai skala kepadatan layar
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: viewport,
+            transform: [dpr, 0, 0, dpr, 0, 0] // Mengunci kejelasan objek gambar dan font teks
+        };
+
+        return page.render(renderContext).promise.then(() => {
+            renderedPages.add(pageNum);
+        });
+    });
+}
 
         function switchViewMode(mode) {
             currentMode = mode;
