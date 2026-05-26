@@ -98,6 +98,7 @@ jobs:
         if: steps.check_changes.outputs.changed == 'true' 
         uses: peaceiris/actions-gh-pages@v4
         with:
+          node-version: 24.16.0
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./deploy_dir
           publish_branch: site
