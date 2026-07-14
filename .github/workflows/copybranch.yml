@@ -47,7 +47,7 @@ jobs:
           path: site
 
       - name: '1.5 Setup Node.js v22'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24.18.0
 
